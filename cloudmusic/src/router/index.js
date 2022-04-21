@@ -17,7 +17,8 @@ import Clauseserve from '../views/Clauseserve.vue'
 import Clauseprivacy from '../views/Clauseprivacy.vue'
 import Clausechild from '../views/Clausechild.vue'
 import songlist from '../views/songlist.vue'
-
+import daygedan from '../views/daygedan.vue'
+import audiosong from '../views/audiosong.vue'
 
 Vue.use(VueRouter)
 
@@ -88,7 +89,23 @@ const routes = [
             meta: {
               keepAlive: false, 
           }
+          },
+          {
+            path:'/daygedan',
+            name:'/daygedan',
+            component:daygedan,
+            meta: {
+              keepAlive: true, 
           }
+          },
+          {
+            path:'/audiosong',
+            name:'/audiosong',
+            component:audiosong,
+            meta: {
+              keepAlive: false, 
+          }
+          },
         ]
       },
       {

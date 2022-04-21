@@ -8,6 +8,8 @@ import 'element-ui/lib/theme-chalk/index.css'
 import flex from '../node_modules/flexible.js'
 
 import axios from '../axios-0.18.0.js'
+import '../node_modules/swiper/js/swiper.min.js'
+import '../node_modules/swiper/css/swiper.min.css'
 // import axios from '../axios-0.18.0'
 
 axios.defaults.withCredentials = true

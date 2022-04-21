@@ -84,7 +84,7 @@
                     idx % 2 === 1 ? 'slllistpub' : 'slllistpub1'
                   ]"
                 >
-                  {{ sliten.time }}
+                  {{ sliten.dt }}
                 </div>
                 <div
                   :class="[
@@ -115,7 +115,7 @@
 export default {
   data() {
     return {
-      text: 6817992958,
+      text: 19723756,
       //获取到的歌单详细信息
       songlist: {
         coverImgUrl: '',
@@ -142,7 +142,8 @@ export default {
           ],
           al: {
             name: 'name'
-          }
+          },
+          alia: []
         },
         {
           num: 1,
@@ -155,7 +156,8 @@ export default {
           ],
           al: {
             name: 'name'
-          }
+          },
+          alia: []
         }
       ],
       //暂存歌曲列表权限shuzu
@@ -214,6 +216,26 @@ export default {
             getsongdetaili++
           ) {
             let linshiarname = this.songlistdata[getsongdetaili].ar[0].name
+            //处理时间代码
+            // let linshiarname = this.daysonglist[getsongdetaili].ar[0].name
+            let time = ''
+            let linshitime = parseInt(
+              Number(this.songlistdata[getsongdetaili].dt) / 1000
+            )
+            let linsihtimefen = parseInt(linshitime / 60)
+            if (linsihtimefen < 10) {
+              time = time + '0' + String(linsihtimefen) + ':'
+            } else {
+              time = time + String(linsihtimefen) + ':'
+            }
+            let linshitimemiao = linshitime % 60
+            if (linshitimemiao < 10) {
+              time = time + '0' + String(linshitimemiao)
+            } else {
+              time = time + String(linshitimemiao)
+            }
+            this.songlistdata[getsongdetaili].dt = time
+            //处理时间代码结束
             if (this.songlistdata[getsongdetaili].ar.length > 1) {
               for (
                 let getsongdetailj = 1;

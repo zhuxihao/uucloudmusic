@@ -261,6 +261,7 @@ export default {
   },
   mounted() {
     this.displayfindmusic()
+    this.displaysongdrawer()
   },
   methods: {
     //测试函数区域-----------------------------------------
@@ -276,6 +277,7 @@ export default {
     },
 
     //正式函数区域-----------------------------------------
+
     //设置首次加载进入主页函数
     displayfindmusic() {
       this.$router.push('/tuijian')

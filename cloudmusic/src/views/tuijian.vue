@@ -2,7 +2,22 @@
   <div class="tuijianmain">
     <div class="tuijianmainbig">
       <!-- 轮播图区域 -->
-      <div class="swiper"></div>
+      <canvas id="canvas"></canvas>
+      <div class="swiper" id="swiper">
+        <div class="swiper-container">
+          <div class="swiper-wrapper">
+            <div
+              class="swiper-slide"
+              v-for="item in imglist"
+              :key="item.imageUrl"
+            >
+              <img class="swiperimg" :src="item.imageUrl" alt="" />
+            </div>
+          </div>
+          <div class="swiper-pagination" slot="pagination"></div>
+          <!--分页器。如果放置在swiper-container外面，需要自定义样式。-->
+        </div>
+      </div>
       <div class="tuijianmaindown">
         <div class="tuijianjuzhong">
           <div class="juzhongleft">
@@ -11,14 +26,14 @@
               <div class="tjtitleimg"></div>
               <div class="tjtitletext">热门推荐</div>
               <div class="hottag">
-                <div class="hottag1 hottag0">华语</div>
-                <div class="hottag2 hottag0">流行</div>
-                <div class="hottag3 hottag0">摇滚</div>
-                <div class="hottag4 hottag0">民谣</div>
-                <div class="hottag5 hottag0">电子</div>
+                <div class="hottag1 hottag0" @click="gogedan('华语')">华语</div>
+                <div class="hottag2 hottag0" @click="gogedan('流行')">流行</div>
+                <div class="hottag3 hottag0" @click="gogedan('摇滚')">摇滚</div>
+                <div class="hottag4 hottag0" @click="gogedan('民谣')">民谣</div>
+                <div class="hottag5 hottag0" @click="gogedan('电子')">电子</div>
               </div>
               <div class="tjtitlemany">
-                <div class="tjtitlemanytext">更多</div>
+                <div class="tjtitlemanytext" @click="gogedan('全部')">更多</div>
                 <div class="tjtitlemanyimg"></div>
               </div>
             </div>
@@ -44,9 +59,15 @@
             </div>
             <div class="gexinglists">
               <!-- list1------- -->
-              <div class="gexinglist" @click="gethotlist()">
+              <div class="gexinglist" @click="godaygedan()">
                 <div class="gexinglistimg">
-                  <img class="gexinglistimgimg" src="../image/01.jpg" alt="" />
+                  <!-- <img class="gexinglistimgimg" src="../image/01.jpg" alt="" /> -->
+                  <div class="gexinglistdaybig">
+                    <div class="gxliititle">{{ daymouth }}</div>
+                    <div class="gxliibig">{{ dayday }}</div>
+                    <div class="gxliiup"></div>
+                    <div class="gxliido"></div>
+                  </div>
                 </div>
                 <div class="gexinglisttitle1">每日歌曲推荐</div>
                 <div class="gexinglisttitle2">
@@ -55,7 +76,7 @@
                 </div>
               </div>
               <!-- list2------- -->
-              <div class="gexinglist">
+              <div class="gexinglist" @click="displaysonglist(gexinglist1.id)">
                 <div class="gexinglistimg">
                   <img
                     class="gexinglistimgimg"
@@ -88,7 +109,7 @@
                 </div>
               </div>
               <!-- list3------- -->
-              <div class="gexinglist">
+              <div class="gexinglist" @click="displaysonglist(gexinglist1.id)">
                 <div class="gexinglistimg">
                   <img
                     class="gexinglistimgimg"
@@ -121,7 +142,7 @@
                 </div>
               </div>
               <!-- list4------- -->
-              <div class="gexinglist">
+              <div class="gexinglist" @click="displaysonglist(gexinglist1.id)">
                 <div class="gexinglistimg">
                   <img
                     class="gexinglistimgimg"
@@ -159,7 +180,7 @@
               <div class="tjtitleimg"></div>
               <div class="tjtitletext">新碟推荐</div>
               <div class="tjtitlemany">
-                <div class="tjtitlemanytext">更多</div>
+                <div class="tjtitlemanytext" @click="goxindie()">更多</div>
                 <div class="tjtitlemanyimg"></div>
               </div>
             </div>
@@ -200,8 +221,109 @@
               <div class="tjtitleimg"></div>
               <div class="tjtitletext">榜单</div>
               <div class="tjtitlemany">
-                <div class="tjtitlemanytext">更多</div>
+                <div class="tjtitlemanytext" @click="gonangdan()">更多</div>
                 <div class="tjtitlemanyimg"></div>
+              </div>
+            </div>
+            <div class="bangdanlistkuang">
+              <div class="tjllists1">
+                <div
+                  :class="[idx == 0 ? 'tjlliststop' : 'tjtjslllist']"
+                  v-for="(sliten, idx) in songlistdata1"
+                  :key="idx"
+                  @click="audiosong(sliten.id, idx)"
+                >
+                  <div
+                    :class="[
+                      'tjslllist1',
+                      idx % 2 === 0 ? 'tjllistpub' : 'tjllistpub1'
+                    ]"
+                    v-if="idx != 0"
+                  >
+                    {{ idx }}
+                  </div>
+                  <div
+                    :class="[
+                      'tjslllist2',
+                      idx % 2 === 0 ? 'tjllistpub' : 'tjllistpub1'
+                    ]"
+                    v-if="idx != 0"
+                  >
+                    {{ sliten.name }}
+                  </div>
+                  <div class="tjlisttitleimg1" v-if="idx == 0">
+                    <img
+                      class="tjlisttitleimgimg"
+                      src="https://p1.music.126.net/pcYHpMkdC69VVvWiynNklA==/109951166952713766.jpg"
+                      alt=""
+                    />
+                  </div>
+                  <div class="tjlisttitletext" v-if="idx == 0">飙升榜</div>
+                </div>
+              </div>
+              <div class="tjllists2">
+                <div
+                  :class="[idx == 0 ? 'tjlliststop' : 'tjtjslllist']"
+                  v-for="(sliten, idx) in songlistdata2"
+                  :key="idx"
+                  @click="audiosong(sliten.id, idx)"
+                >
+                  <div
+                    :class="[
+                      'tjslllist1',
+                      idx % 2 === 0 ? 'tjllistpub' : 'tjllistpub1'
+                    ]"
+                    v-if="idx != 0"
+                  >
+                    {{ idx }}
+                  </div>
+                  <div
+                    :class="[
+                      'tjslllist2',
+                      idx % 2 === 0 ? 'tjllistpub' : 'tjllistpub1'
+                    ]"
+                    v-if="idx != 0"
+                  >
+                    {{ sliten.name }}
+                  </div>
+                  <div class="tjlisttitleimg2" v-if="idx == 0">
+                    <img
+                      class="tjlisttitleimgimg"
+                      src="https://p1.music.126.net/wVmyNS6b_0Nn-y6AX8UbpQ==/109951166952686384.jpg"
+                      alt=""
+                    />
+                  </div>
+                  <div class="tjlisttitletext" v-if="idx == 0">新歌榜</div>
+                </div>
+              </div>
+              <div class="tjllists3">
+                <div
+                  :class="[idx == 0 ? 'tjlliststopxiu' : 'tjtjslllistxiu']"
+                  v-for="(sliten, idx) in songlistdata3"
+                  :key="idx"
+                  @click="audiosong(sliten.id, idx)"
+                >
+                  <div
+                    :class="[
+                      'tjslllist1',
+                      idx % 2 === 0 ? 'tjllistpub' : 'tjllistpub1'
+                    ]"
+                    v-if="idx != 0"
+                  >
+                    {{ idx }}
+                  </div>
+                  <div
+                    :class="[
+                      'tjslllist2',
+                      idx % 2 === 0 ? 'tjllistpub' : 'tjllistpub1'
+                    ]"
+                    v-if="idx != 0"
+                  >
+                    {{ sliten.name }}
+                  </div>
+                  <div class="tjlisttitleimg3" v-if="idx == 0"></div>
+                  <div class="tjlisttitletext" v-if="idx == 0">原创榜</div>
+                </div>
               </div>
             </div>
           </div>
@@ -212,6 +334,7 @@
   </div>
 </template>
 <script>
+import Swiper from 'swiper'
 export default {
   data() {
     return {
@@ -243,15 +366,155 @@ export default {
       tjtitle1under2: 'gexinglisttitle1',
       tjtitle1under3: 'gexinglisttitle1',
       //新碟推荐数组
-      newtvlist: []
+      newtvlist: [],
+      //每日推荐歌单，今日星期几变量
+      daymouth: '',
+      //每日推荐歌单，今日几号变量
+      dayday: '',
+      //轮播图图片
+      imglist: [
+        {
+          imageUrl:
+            'http://p3.music.126.net/eLXUupsFAophg2Sx2CpAjQ==/109951163093327787.jpg'
+        },
+        {
+          imageUrl:
+            'http://p4.music.126.net/kT4AECoc13oVKLEg_-eFMA==/109951166578436098.jpg'
+        }
+      ],
+      //榜单区域歌曲列表
+      songlistdata1: [
+        {
+          name: '征途1'
+        },
+        {
+          name: '征途2'
+        },
+        {
+          name: '征途3'
+        },
+        {
+          name: '征途4'
+        }
+      ],
+      songlistdata2: [
+        {
+          name: '征途1'
+        },
+        {
+          name: '征途2'
+        },
+        {
+          name: '征途3'
+        },
+        {
+          name: '征途4'
+        }
+      ],
+      songlistdata3: [
+        {
+          name: '征途1'
+        },
+        {
+          name: '征途2'
+        },
+        {
+          name: '征途3'
+        },
+        {
+          name: '征途4'
+        }
+      ]
     }
   },
   mounted() {
-    this.gethotlist()
+    // this.gethotlist()
     // this.getdaylist()
+    this.getdaymouth()
+    // this.startswiper()
+    this.getthreebdlist()
   },
   methods: {
     //界面js函数------------------------------------------------------------------------------------------
+    //启动轮播图函数
+    startswiper() {
+      this.$axios
+        .get('http://localhost:3000/banner', {
+          type: 0
+        })
+        .then((res) => {
+          this.imglist = res.data.banners
+          console.log(this.imglist)
+          console.log('==============')
+          this.$nextTick(() => {
+            var swiper = new Swiper('.swiper-container', {
+              mousewheel: true,
+              autoplay: {
+                delay: 2000,
+                disableOnInteraction: false
+              }, //默认是3秒
+              // EffectFlip: true,
+              Effects: {
+                EffectFlip: true
+              },
+              effect: 'fade',
+              pagination: {
+                el: '.swiper-pagination',
+                clickable: true
+              },
+              // autoplay: {
+              //   delay: 1000 //切换时间，以毫秒计
+              // },
+              loop: true, //循环
+              on: {
+                slideChangeTransitionStart: function () {
+                  // console.log(this.activeIndex) //切换结束时，告诉我现在是第几个slide
+                  let num = this.activeIndex
+
+                  if (num == 0) {
+                    num = 10
+                  }
+                  if (num == 11) {
+                    num = 1
+                  }
+                  console.log(num)
+                  var img_url = res.data.banners[num - 1].imageUrl
+                  var img = new Image()
+                  var canvas = document.getElementById('canvas')
+                  var ctx = canvas.getContext('2d')
+                  img.onload = function () {
+                    ctx.drawImage(img, 0, 0)
+                    img.style.display = 'none'
+                    var imgData = ctx.getImageData(
+                      0,
+                      0,
+                      img.width,
+                      img.height
+                    ).data
+                    var b =
+                      '(' +
+                      imgData[0] +
+                      ',' +
+                      imgData[1] +
+                      ',' +
+                      imgData[2] +
+                      ',' +
+                      imgData[3] +
+                      ')'
+                    //   $('#app').css({
+                    //     'background-color': 'rgb' + b
+                    //   })
+                    const swiper = document.getElementById('swiper')
+                    swiper.style.background = 'rgb' + b
+                  }
+                  img.src = img_url
+                  img.crossOrigin = 'anonymous'
+                }
+              }
+            })
+          })
+        })
+    },
     //点击不感兴趣切换下一个推荐歌单函数
     tjnointernext(next) {
       if (this.gexinglistnum > 0) {
@@ -309,6 +572,41 @@ export default {
     displaysonglist(slid) {
       window.sessionStorage.setItem('slid', slid)
       this.$router.push('songlist')
+    },
+    //热门推荐进入歌单界面函数，默认参数全部
+    gogedan(tag) {
+      window.sessionStorage.setItem('tag', tag)
+      this.$router.push('gedan')
+    },
+    //点击每日推荐30首进入歌曲界面
+    godaygedan() {
+      this.$router.push('daygedan')
+    },
+    //点击新碟推荐更多进入新碟推荐页面函数
+    goxindie() {
+      this.$router.push('xindie')
+    },
+    //点击榜单更多更多进去榜单界面
+    gonangdan() {
+      this.$router.push('paihang')
+    },
+    //进入单曲播放界面
+    audiosong(id, idx) {
+      if (idx != 0) {
+        this.$router.push('audiosong')
+        window.sessionStorage.setItem('songid', id)
+      }
+    },
+    //获取每日推荐歌单区域显示今日日期函数
+    getdaymouth() {
+      var a = ['日', '一', '二', '三', '四', '五', '六']
+      var nowtime = new Date()
+      this.daymouth = '星期' + a[nowtime.getDay()]
+      this.dayday = nowtime.getDate()
+    },
+    //测试轮播图切换函数
+    handleClickSlide(a) {
+      console.log(a)
     },
 
     //请求js函数------------------------------------------------------------------------------------------
@@ -370,6 +668,53 @@ export default {
           this.gexinglistnum = this.gexinglist.length
         })
       // this.gethotlist()
+    },
+    //获取飙升榜、新歌榜、原创榜各自十份数据函数
+    getthreebdlist() {
+      this.$axios
+        .get('http://localhost:3000/playlist/track/all', {
+          params: {
+            id: 19723756,
+            limit: 10
+          }
+        })
+        .then((res) => {
+          console.log('1111')
+          console.log(res.data)
+          console.log('2222')
+          this.songlistdata1 = res.data.songs
+          this.songlistdata1.unshift({ name: '' })
+        })
+
+      this.$axios
+        .get('http://localhost:3000/playlist/track/all', {
+          params: {
+            id: 3779629,
+            limit: 10
+          }
+        })
+        .then((res) => {
+          console.log('1111')
+          console.log(res.data)
+          console.log('2222')
+          this.songlistdata2 = res.data.songs
+          this.songlistdata2.unshift({ name: '' })
+        })
+
+      this.$axios
+        .get('http://localhost:3000/playlist/track/all', {
+          params: {
+            id: 2884035,
+            limit: 10
+          }
+        })
+        .then((res) => {
+          console.log('1111')
+          console.log(res.data)
+          console.log('2222')
+          this.songlistdata3 = res.data.songs
+          this.songlistdata3.unshift({ name: '' })
+        })
     }
   }
 }
@@ -377,6 +722,7 @@ export default {
 <style class="less" scope>
 .tuijianmain {
   margin: 0px;
+  padding: 0px;
   width: 100%;
   /* height: 2000px; */
   background: rgb(245, 245, 245);
@@ -391,6 +737,22 @@ export default {
   width: 100%;
   height: 280px;
   background: rgb(220, 202, 170);
+}
+#canvas {
+  height: 0px;
+  width: 0px;
+}
+.swiper-container {
+  height: 280px;
+  width: 985px;
+}
+.swiper-wrapper {
+  height: 280px;
+  width: 985px;
+}
+.swiperimg {
+  width: 100%;
+  height: 100%;
 }
 .tuijianmaindown {
   float: left;
@@ -571,6 +933,49 @@ export default {
   height: 100%;
   width: 100%;
 }
+.gexinglistdaybig {
+  position: relative;
+  cursor: pointer;
+  height: 142px;
+  width: 142px;
+  border-radius: 9px;
+}
+.gxliititle {
+  height: 32px;
+  width: 142px;
+  text-align: center;
+  line-height: 32px;
+  font-size: 14px;
+  color: rgb(254, 217, 217);
+  border-top-left-radius: 9px;
+  border-top-right-radius: 9px;
+  background: rgb(192, 35, 35);
+}
+.gxliiup {
+  height: 55px;
+  width: 142px;
+  background: linear-gradient(rgb(245, 245, 245), rgb(219, 219, 219));
+}
+.gxliido {
+  height: 54px;
+  width: 142px;
+  border-top: 1px solid rgb(226, 226, 226);
+  border-bottom-left-radius: 9px;
+  border-bottom-right-radius: 9px;
+  background: linear-gradient(rgb(254, 254, 254), rgb(219, 219, 219));
+}
+.gxliibig {
+  position: absolute;
+  text-align: center;
+  line-height: 110px;
+  height: 110px;
+  width: 142px;
+  font-size: 88px;
+  /* font-family: 10; */
+  font-weight: 600;
+  text-align: center;
+  line-height: 110px;
+}
 .gexinglisttitle1 {
   margin-top: 4px;
   font-size: 14px;
@@ -672,4 +1077,150 @@ export default {
   overflow: hidden;
   text-overflow: ellipsis;
 }
+.bangdanlistkuang {
+  float: left;
+  height: 440px;
+  width: 701px;
+  border: 1px solid rgb(211, 211, 211);
+  margin-top: 20px;
+  margin-left: 15px;
+  /* display: flex; */
+}
+/* 榜单区域公用css样式插入开始 */
+
+.tjllists1 {
+  float: left;
+  height: 440px;
+  width: 233px;
+  /* margin-left: 1px; */
+  /* background: pink; */
+  /* border-right: 1px solid rgb(209, 209, 209); */
+}
+.tjllists2 {
+  float: left;
+  height: 440px;
+  width: 233px;
+  border-left: 1px solid rgb(229, 229, 229);
+  border-right: 1px solid rgb(221, 221, 221);
+  /* background: pink; */
+}
+.tjllists3 {
+  float: left;
+  height: 440px;
+  width: 233px;
+  /* border-left: 1px solid rgb(209, 209, 209); */
+  /* background: pink; */
+}
+
+.tjtjslllist {
+  float: left;
+  cursor: pointer;
+  height: 32px;
+  width: 233px;
+  /* background: pink; */
+}
+
+.tjtjslllistxiu {
+  float: left;
+  cursor: pointer;
+  height: 32px;
+  width: 233px;
+  margin-left: 1px;
+  background: pink;
+}
+.tjlliststop {
+  float: left;
+  cursor: pointer;
+  height: 120px;
+  width: 233px;
+  background: rgb(244, 244, 244);
+}
+.tjlliststopxiu {
+  float: left;
+  cursor: pointer;
+  height: 120px;
+  width: 233px;
+  margin-left: 1px;
+  background: rgb(244, 244, 244);
+}
+.tjllistpub {
+  height: 32px;
+  line-height: 32px;
+  font-size: 12px;
+  /* padding-left: 6px;
+  padding-right: 6px; */
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  background: rgb(244, 244, 244);
+}
+.tjllistpub1 {
+  height: 32px;
+  line-height: 32px;
+  font-size: 12px;
+  /* padding-left: 6px;
+  padding-right: 6px; */
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  background: rgb(232, 232, 232);
+}
+.tjslllist1 {
+  float: left;
+  width: 38px;
+  color: rgb(200, 13, 12);
+  font-size: 16px;
+  padding-left: 25px;
+  /* background: yellowgreen; */
+}
+.tjslllist2 {
+  float: left;
+  width: 170px;
+  /* background: palegoldenrod; */
+}
+.tjlisttitleimg1 {
+  float: left;
+  height: 80px;
+  width: 79px;
+  margin-top: 20px;
+  margin-left: 20px;
+  /* background: yellowgreen; */
+  border: 1px solid rgb(198, 111, 147);
+}
+.tjlisttitleimg2 {
+  float: left;
+  height: 80px;
+  width: 79px;
+  margin-top: 20px;
+  margin-left: 20px;
+  /* background: yellowgreen; */
+  border: 1px solid rgb(101, 174, 173);
+}
+.tjlisttitleimg3 {
+  float: left;
+  height: 80px;
+  width: 80px;
+  margin-top: 20px;
+  margin-left: 20px;
+  padding-left: -1px;
+  /* background: yellowgreen; */
+  border: 1px solid rgb(100, 143, 188);
+  background: url('https://p1.music.126.net/iFZ_nw2V86IFk90dc50kdQ==/109951166961388699.jpg');
+  background-size: length(100%, 100%);
+  -webkit-background-size: cover;
+  -o-background-size: cover;
+  background-position: center, center;
+}
+.tjlisttitleimgimg {
+  height: 100%;
+  width: 100%;
+}
+.tjlisttitletext {
+  float: left;
+  font-size: 14px;
+  font-weight: bold;
+  margin-top: 30px;
+  margin-left: 8px;
+}
+/* 榜单区域公用css样式插入结束 */
 </style>
